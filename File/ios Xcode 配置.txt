@@ -1,0 +1,108 @@
+
+新账号
+apple01@hwapu22.com
+koridyApp2020
+
+
+旧账号
+apple@hwapu22.com
+hWapu2015 
+
+======================打包Xcode手动配置====================
+
+(1).//命令敲，执行
+chmod +x MapFileParser.sh
+chmod +x process_symbols.sh
+//命令敲，查看包含的第三方库
+grep -r "UIWebView" .
+
+(2).Associated Domains:applinks:kimimath.kyd2002.cn
+
+(3).#info ->URL Type
+com.kyd.kimikidsmath       wxda445c2b2b452f25
+
+
+(4).UnityAppController.mm修改
+#import "WXApiManager.h"
+
+UnityAppController.openurl()  
+return [WXApi handleOpenURL:url delegate:[WXApiManager sharedManager]]; 
+
+UnityAppController.didFInish()（老版本1.8.6以前）
+//向微信注册
+    BOOL b=[WXApi registerApp:@"wxda445c2b2b452f25" enableMTA:YES];
+    
+    NSLog (@ "字符串:%@" ,@"++++++++++++注册微信");
+    NSLog (@ "字符串:%i" ,b);
+    //向微信注册支持的文件类型
+    UInt64 typeFlag = MMAPP_SUPPORT_TEXT | MMAPP_SUPPORT_PICTURE | MMAPP_SUPPORT_LOCATION | MMAPP_SUPPORT_VIDEO |MMAPP_SUPPORT_AUDIO | MMAPP_SUPPORT_WEBPAGE | MMAPP_SUPPORT_DOC | MMAPP_SUPPORT_DOCX | MMAPP_SUPPORT_PPT | MMAPP_SUPPORT_PPTX | MMAPP_SUPPORT_XLS | MMAPP_SUPPORT_XLSX | MMAPP_SUPPORT_PDF;
+    
+    [WXApi registerAppSupportContentFlag:typeFlag];
+
+UnityAppController.didFInish()  新版本（1.8.6以后才用  ）
+//向微信注册
+        BOOL b=[WXApi registerApp:@"wxda445c2b2b452f25" universalLink:@"https://kimimath.kyd2002.cn/"];
+        NSLog (@ "注册微信结果1-成功:%i" ,b);
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    return  [WXApi handleOpenURL:url delegate:[WXApiManager sharedManager]];
+}
+
+-(BOOL) application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler{
+    NSLog (@ "jun:%@" ,@"104");
+    return [WXApi handleOpenUniversalLink:userActivity delegate:[WXApiManager sharedManager]];
+    
+}
+
+
+(5).#build phases  ->Link Binary With     framework添加引用库
+libz.tbd
+libsqlite3.0.tbd
+libc.tbd
+Security.freme
+CoreTe….
+Webkit
+
+(6).#info.list
+LSApplicationQueriesSchemes           weixin    weixinULAPI
+
+ApplicationuseWiFi               true
+
+//相册权限
+Privacy - Camera Usage Description           cameraDesciption
+Privacy - Contacts Usage Description         contactsDesciption
+Privacy - Photo Library Usage Description       photoLibraryDesciption
+Privacy - Photo Library Additions Usage Description       photoLibraryAdditionsDesciption
+
+找到UIApplicationExitOnSuspend 键删除
+添加key    NSLocationWhenInUseUsageDescription
+修改语言
+Localized resources can be mixed    Yes
+Project iPhone 添加Chinese 
+
+Bundle Version   每次增加1  开发内部管理 如1.0.1
+Bundle Version string(shot)  1.0  ituns显示版本对外可自定义
+app store connect 构建版本为：1.0(1.0.1)
+
+(7).#build setting设置   
+-Objc -all_load
+
+BitCode       No
+
+Preprocessor Macros  DISABLE_PUSH_NOTIFICATIONS=1
+
+Apple Clang -Language -c++
+    Enable C++ Exceptions Yes
+    Enable C++ Runtime Types Yes
+Apple Clang _Language -Object -C
+Enable Objective-C Exceptions  Yes
+
+
+
+备注( 发布需要改)
+1.替换icon，启动页
+
+2.general
+Deployment target 9.0
+
+3.修改相应版本号

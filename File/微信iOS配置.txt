@@ -1,0 +1,11 @@
+Xcode需要配置：
+
+1.注意包名,选择签名文件
+
+2.-Signing&Capabilities  添加 ：（1）签名文件；（2）：左上角+号添加：Associated Domains  值为：applinks:通用链接地址（如我的是applinks:chart.lemonread.com/） 
+
+3.-Other Linker Flags添加：_force_load $(SRCROOT)/wechat/libWeChatSdk.a（不这样操作会崩）
+
+4.UnityAppController.mm文件，WXApi.h 和 WXApiManager.h置于文件头部
+
+该函数openURL（）->注释return YES   ，添加return  [WXApi handleOpenURL:url delegate:[WXApiManager shareManager]];
